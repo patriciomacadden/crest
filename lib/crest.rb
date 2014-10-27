@@ -3,7 +3,7 @@ require 'inflecto'
 module Crest
   def rest(klass, &block)
     self.class.send :define_method, :"list_#{Inflecto.underscore Inflecto.pluralize(klass)}" do
-      render 'list', :"#{Inflecto.underscore Inflecto.pluralize(klass)}" => klass.all
+      render "#{Inflecto.underscore Inflecto.pluralize(klass)}/list", :"#{Inflecto.underscore Inflecto.pluralize(klass)}" => klass.all
     end unless respond_to? :"list_#{Inflecto.underscore Inflecto.pluralize(klass)}"
 
     self.class.send :define_method, :"create_#{Inflecto.underscore klass}" do |object_params|
@@ -12,16 +12,16 @@ module Crest
         object.save
         res.redirect "/#{Inflecto.underscore Inflecto.pluralize(klass)}/#{object.id}"
       else
-        render 'new', :"#{Inflecto.underscore klass}" => object
+        render "#{Inflecto.underscore Inflecto.pluralize(klass)}/new", :"#{Inflecto.underscore klass}" => object
       end
     end unless respond_to? :"create_#{Inflecto.underscore klass}"
 
     self.class.send :define_method, :"new_#{Inflecto.underscore klass}" do
-      render 'new', :"#{Inflecto.underscore klass}" => klass.new
+      render "#{Inflecto.underscore Inflecto.pluralize(klass)}/new", :"#{Inflecto.underscore klass}" => klass.new
     end unless respond_to? :"new_#{Inflecto.underscore klass}"
 
     self.class.send :define_method, :"show_#{Inflecto.underscore klass}" do |object|
-      render 'show', :"#{Inflecto.underscore klass}" => object
+      render "#{Inflecto.underscore Inflecto.pluralize(klass)}/show", :"#{Inflecto.underscore klass}" => object
     end unless respond_to? :"show_#{Inflecto.underscore klass}"
 
     self.class.send :define_method, :"update_#{Inflecto.underscore klass}" do |object, object_params|
@@ -30,7 +30,7 @@ module Crest
         object.save
         res.redirect "/#{Inflecto.underscore Inflecto.pluralize(klass)}/#{object.id}"
       else
-        render 'edit', :"#{Inflecto.underscore klass}" => object
+        render "#{Inflecto.underscore Inflecto.pluralize(klass)}/edit", :"#{Inflecto.underscore klass}" => object
       end
     end unless respond_to? :"update_#{Inflecto.underscore klass}"
 
@@ -40,7 +40,7 @@ module Crest
     end unless respond_to? :"delete_#{Inflecto.underscore klass}"
 
     self.class.send :define_method, :"edit_#{Inflecto.underscore klass}" do |object|
-      render 'edit', :"#{Inflecto.underscore klass}" => object
+      render "#{Inflecto.underscore Inflecto.pluralize(klass)}/edit", :"#{Inflecto.underscore klass}" => object
     end unless respond_to? :"edit_#{Inflecto.underscore klass}"
 
     on Inflecto.underscore(Inflecto.pluralize(klass)) do
