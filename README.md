@@ -36,7 +36,9 @@ Cuba.plugin Cuba::Render
 Cuba.plugin Crest
 
 Cuba.define do
-  rest Article # asuming that you have an Article model.
+  on 'articles' do
+    rest Article # asuming that you have an Article model.
+  end
 end
 ```
 
@@ -64,9 +66,11 @@ Well, just send a block along with the class name, like this:
 
 ```ruby
 Cuba.define do
-  rest Article do
-    on get, 'something' do
-      res.write 'hello'
+  on 'articles' do
+    rest Article do
+      on get, 'something' do
+        res.write 'hello'
+      end
     end
   end
 end
@@ -75,6 +79,8 @@ end
 And that'll give you also this route: `GET /articles/something`.
 
 Quite easy!
+
+**Exercise:** try to nest multiple `rest` calls.
 
 ### What if I want to overwrite a route?
 

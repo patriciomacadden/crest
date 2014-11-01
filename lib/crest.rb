@@ -43,43 +43,41 @@ module Crest
       render "#{Inflecto.underscore Inflecto.pluralize(klass)}/edit", :"#{Inflecto.underscore klass}" => object
     end unless respond_to? :"edit_#{Inflecto.underscore klass}"
 
-    on Inflecto.underscore(Inflecto.pluralize(klass)) do
-      block.call unless block.nil?
+    block.call unless block.nil?
+
+    on root do
+      on get do
+        send :"list_#{Inflecto.underscore Inflecto.pluralize(klass)}"
+      end
+
+      on post, param(:"#{Inflecto.underscore klass}") do |object_params|
+        send :"create_#{Inflecto.underscore klass}", object_params
+      end
+    end
+
+    on get, 'new' do
+      send :"new_#{Inflecto.underscore klass}"
+    end
+
+    on :id do |id|
+      object = klass[id]
 
       on root do
         on get do
-          send :"list_#{Inflecto.underscore Inflecto.pluralize(klass)}"
+          send :"show_#{Inflecto.underscore klass}", object
         end
 
-        on post, param(:"#{Inflecto.underscore klass}") do |object_params|
-          send :"create_#{Inflecto.underscore klass}", object_params
+        on put, param(:"#{Inflecto.underscore klass}") do |object_params|
+          send :"update_#{Inflecto.underscore klass}", object, object_params
+        end
+
+        on delete do
+          send :"delete_#{Inflecto.underscore klass}", object
         end
       end
 
-      on get, 'new' do
-        send :"new_#{Inflecto.underscore klass}"
-      end
-
-      on :id do |id|
-        object = klass[id]
-
-        on root do
-          on get do
-            send :"show_#{Inflecto.underscore klass}", object
-          end
-
-          on put, param(:"#{Inflecto.underscore klass}") do |object_params|
-            send :"update_#{Inflecto.underscore klass}", object, object_params
-          end
-
-          on delete do
-            send :"delete_#{Inflecto.underscore klass}", object
-          end
-        end
-
-        on 'edit' do
-          send :"edit_#{Inflecto.underscore klass}", object
-        end
+      on 'edit' do
+        send :"edit_#{Inflecto.underscore klass}", object
       end
     end
   end

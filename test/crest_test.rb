@@ -97,7 +97,9 @@ scope Crest do
         end
 
         define do
-          rest Article
+          on 'articles' do
+            rest Article
+          end
         end
       end
     end
@@ -107,5 +109,34 @@ scope Crest do
       assert_status 200
       assert_matches /overwritten/, last_response.body
     end
+  end
+
+  scope 'nested routes' do
+    setup do
+      @app = Class.new Cuba do
+        define do
+          on 'articles' do
+            rest Article do
+              on ':id/comments' do |id|
+                # normally you would like to find the Article and overwrite
+                # #list_comments in order to get its related comments
+                rest Comment
+              end
+            end
+          end
+        end
+      end
+    end
+
+    test 'works' do
+      get '/articles/1/comments'
+      assert_status 200
+      assert_matches /listing comments/, last_response.body
+      assert_matches /Patricio/, last_response.body
+      assert_matches /Matz/, last_response.body
+    end
+
+    # it doesn't make sense to test the other methods since they're already
+    # tested
   end
 end
