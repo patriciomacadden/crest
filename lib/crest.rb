@@ -10,7 +10,7 @@ module Crest
       object = klass.new object_params
       if object.valid?
         object.save
-        res.redirect "/#{Inflecto.underscore Inflecto.pluralize(klass)}/#{object.id}"
+        res.redirect "#{ENV['BASE_URI']}/#{Inflecto.underscore Inflecto.pluralize(klass)}/#{object.id}"
       else
         render "#{Inflecto.underscore Inflecto.pluralize(klass)}/new", :"#{Inflecto.underscore klass}" => object
       end
@@ -28,7 +28,7 @@ module Crest
       object.set_all object_params
       if object.valid?
         object.save
-        res.redirect "/#{Inflecto.underscore Inflecto.pluralize(klass)}/#{object.id}"
+        res.redirect "#{ENV['BASE_URI']}/#{Inflecto.underscore Inflecto.pluralize(klass)}/#{object.id}"
       else
         render "#{Inflecto.underscore Inflecto.pluralize(klass)}/edit", :"#{Inflecto.underscore klass}" => object
       end
@@ -36,7 +36,7 @@ module Crest
 
     self.class.send :define_method, :"delete_#{Inflecto.underscore klass}" do |object|
       object.delete
-      res.redirect "/#{Inflecto.underscore Inflecto.pluralize(klass)}"
+      res.redirect "#{ENV['BASE_URI']}/#{Inflecto.underscore Inflecto.pluralize(klass)}"
     end unless respond_to? :"delete_#{Inflecto.underscore klass}"
 
     self.class.send :define_method, :"edit_#{Inflecto.underscore klass}" do |object|
