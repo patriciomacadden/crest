@@ -43,6 +43,10 @@ module Crest
       render "#{Inflecto.underscore Inflecto.pluralize(klass)}/edit", :"#{Inflecto.underscore klass}" => object
     end unless respond_to? :"edit_#{Inflecto.underscore klass}"
 
+    self.class.send :define_method, :"find_#{Inflecto.underscore klass}" do |id|
+      klass[id]
+    end unless respond_to? :"find_#{Inflecto.underscore klass}"
+
     block.call unless block.nil?
 
     on root do
@@ -60,7 +64,7 @@ module Crest
     end
 
     on :id do |id|
-      object = klass[id]
+      object = send :"find_#{Inflecto.underscore klass}", id
 
       on root do
         on get do
