@@ -24,6 +24,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rake', '~> 10.0'
   spec.add_development_dependency 'tilt'
 
-  spec.add_runtime_dependency 'cuba', '~> 3.3.0'
+  spec.add_runtime_dependency 'cuba', '~> 3.0'
   spec.add_runtime_dependency 'inflecto'
 end
