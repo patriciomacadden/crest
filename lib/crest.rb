@@ -10,7 +10,7 @@ module Crest
       object = klass.new object_params
       if object.valid?
         object.save
-        send :"show_#{Inflecto.underscore klass}", object
+        res.redirect "#{options[:base_uri]}/#{Inflecto.underscore Inflecto.pluralize(klass)}/#{object.id}"
       else
         render "#{Inflecto.underscore Inflecto.pluralize(klass)}/new", :"#{Inflecto.underscore klass}" => object
       end
@@ -28,7 +28,7 @@ module Crest
       object.set_all object_params
       if object.valid?
         object.save
-        send :"show_#{Inflecto.underscore klass}", object
+        res.redirect "#{options[:base_uri]}/#{Inflecto.underscore Inflecto.pluralize(klass)}/#{object.id}"
       else
         render "#{Inflecto.underscore Inflecto.pluralize(klass)}/edit", :"#{Inflecto.underscore klass}" => object
       end
