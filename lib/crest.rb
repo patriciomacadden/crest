@@ -96,6 +96,6 @@ module Crest
   private
 
   def define_handler(name, &body)
-    self.class.send(:define_method, name, &body)  unless respond_to? name
+    self.class.send(:define_method, name, &body) unless respond_to? name
   end
 end
