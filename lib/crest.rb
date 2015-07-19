@@ -1,7 +1,44 @@
 require 'inflecto'
 
 module Crest
-  def rest(klass, options = {}, &block)
+  module PathHelper
+    module ClassMethods
+      def define_paths_for(klass)
+        collection_name = Inflecto.underscore Inflecto.pluralize(klass)
+        object_name = Inflecto.underscore klass
+
+        unless respond_to? :"#{object_name}_path"
+          define_method :"#{object_name}_path" do |object|
+            "#{base_uri}/#{collection_name}/#{object.id}"
+          end
+        end
+
+        unless respond_to? :"#{collection_name}_path"
+          define_method :"#{collection_name}_path" do
+            "#{base_uri}/#{collection_name}"
+          end
+        end
+
+        unless respond_to? :"edit_#{object_name}_path"
+          define_method :"edit_#{object_name}_path" do |object|
+            "#{base_uri}/#{collection_name}/#{object.id}/edit"
+          end
+        end
+
+        unless respond_to? :"new_#{object_name}_path"
+          define_method :"new_#{object_name}_path" do
+            "#{base_uri}/#{collection_name}/new"
+          end
+        end
+      end
+    end
+  end
+
+  def base_uri
+    nil
+  end
+
+  def rest(klass, &block)
     collection_name = Inflecto.underscore Inflecto.pluralize(klass)
     object_name = Inflecto.underscore klass
 
@@ -21,7 +58,7 @@ module Crest
       object = klass.new object_params
       if object.valid?
         object.save
-        res.redirect "#{options[:base_uri]}/#{collection_name}/#{object.id}"
+        res.redirect "#{base_uri}/#{collection_name}/#{object.id}"
       else
         render "#{collection_name}/new", :"#{object_name}" => object
       end
@@ -39,7 +76,7 @@ module Crest
       object.set_all object_params
       if object.valid?
         object.save
-        res.redirect "#{options[:base_uri]}/#{collection_name}/#{object.id}"
+        res.redirect "#{base_uri}/#{collection_name}/#{object.id}"
       else
         render "#{collection_name}/edit", :"#{object_name}" => object
       end
@@ -47,7 +84,7 @@ module Crest
 
     define_handler "delete_#{object_name}" do |object|
       object.delete
-      res.redirect "#{options[:base_uri]}/#{collection_name}"
+      res.redirect "#{base_uri}/#{collection_name}"
     end
 
     define_handler "edit_#{object_name}" do |object|
