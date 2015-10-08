@@ -7,25 +7,25 @@ module Crest
         collection_name = Inflecto.underscore Inflecto.pluralize(klass)
         object_name = Inflecto.underscore klass
 
-        unless respond_to? :"#{object_name}_path"
+        unless instance_methods.include? :"#{object_name}_path"
           define_method :"#{object_name}_path" do |object|
             "#{base_uri}/#{collection_name}/#{object.id}"
           end
         end
 
-        unless respond_to? :"#{collection_name}_path"
+        unless instance_methods.include? :"#{collection_name}_path"
           define_method :"#{collection_name}_path" do
             "#{base_uri}/#{collection_name}"
           end
         end
 
-        unless respond_to? :"edit_#{object_name}_path"
+        unless instance_methods.include? :"edit_#{object_name}_path"
           define_method :"edit_#{object_name}_path" do |object|
             "#{base_uri}/#{collection_name}/#{object.id}/edit"
           end
         end
 
-        unless respond_to? :"new_#{object_name}_path"
+        unless instance_methods.include? :"new_#{object_name}_path"
           define_method :"new_#{object_name}_path" do
             "#{base_uri}/#{collection_name}/new"
           end
