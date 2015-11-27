@@ -54,12 +54,12 @@ module Crest
       render "#{collection_name}/list", :"#{collection_name}" => send(:"find_#{collection_name}")
     end
 
-    define_handler "initialize_#{object_name}" do |object_params|
-      klass.new object_params
+    define_handler "initialize_#{object_name}" do |object_param|
+      klass.new object_param
     end
 
-    define_handler "create_#{object_name}" do |object_params|
-      object = send :"initialize_#{object_name}", object_params
+    define_handler "create_#{object_name}" do |object_param|
+      object = send :"initialize_#{object_name}", object_param
       if object.valid?
         object.save
         res.redirect "#{base_uri}/#{collection_name}/#{object.id}"
@@ -76,8 +76,8 @@ module Crest
       render "#{collection_name}/show", :"#{object_name}" => object
     end
 
-    define_handler "update_#{object_name}" do |object, object_params|
-      object.set_all object_params
+    define_handler "update_#{object_name}" do |object, object_param|
+      object.set_all object_param
       if object.valid?
         object.save
         res.redirect "#{base_uri}/#{collection_name}/#{object.id}"
@@ -102,8 +102,8 @@ module Crest
         send :"list_#{collection_name}"
       end
 
-      on post, param(:"#{object_name}") do |object_params|
-        send :"create_#{object_name}", object_params
+      on post, param(:"#{object_name}") do |object_param|
+        send :"create_#{object_name}", object_param
       end
     end
 
@@ -119,8 +119,8 @@ module Crest
           send :"show_#{object_name}", object
         end
 
-        on put, param(:"#{object_name}") do |object_params|
-          send :"update_#{object_name}", object, object_params
+        on put, param(:"#{object_name}") do |object_param|
+          send :"update_#{object_name}", object, object_param
         end
 
         on delete do
