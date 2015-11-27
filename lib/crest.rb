@@ -54,8 +54,12 @@ module Crest
       render "#{collection_name}/list", :"#{collection_name}" => send(:"find_#{collection_name}")
     end
 
+    define_handler "initialize_#{object_name}" do |object_params|
+      klass.new object_params
+    end
+
     define_handler "create_#{object_name}" do |object_params|
-      object = klass.new object_params
+      object = send :"initialize_#{object_name}", object_params
       if object.valid?
         object.save
         res.redirect "#{base_uri}/#{collection_name}/#{object.id}"
