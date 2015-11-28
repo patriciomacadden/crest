@@ -42,23 +42,16 @@ module Crest
     collection_name = Inflecto.underscore Inflecto.pluralize(klass)
     object_name = Inflecto.underscore klass
 
-    define_handler "find_#{object_name}" do |id|
-      klass[id]
-    end
-
-    define_handler "find_#{collection_name}" do
-      klass.all
-    end
-
-    define_handler "list_#{collection_name}" do
-      render "#{collection_name}/list", :"#{collection_name}" => send(:"find_#{collection_name}")
-    end
-
-    define_handler "initialize_#{object_name}" do |object_param|
-      klass.new object_param
-    end
+    define_handler("before_create_#{object_name}") { true }
+    define_handler("before_delete_#{object_name}") { |object| true }
+    define_handler("before_edit_#{object_name}") { |object| true }
+    define_handler("before_list_#{object_name}") { true }
+    define_handler("before_new_#{object_name}") { true }
+    define_handler("before_show_#{object_name}") { |object| true }
+    define_handler("before_update_#{object_name}") { |object| true }
 
     define_handler "create_#{object_name}" do |object_param|
+      send :"before_create_#{object_name}"
       object = send :"initialize_#{object_name}", object_param
       if object.valid?
         object.save
@@ -68,15 +61,46 @@ module Crest
       end
     end
 
+    define_handler "delete_#{object_name}" do |object|
+      send :"before_delete_#{object_name}", object
+      object.delete
+      res.redirect "#{base_uri}/#{collection_name}"
+    end
+
+    define_handler "edit_#{object_name}" do |object|
+      send :"before_edit_#{object_name}", object
+      render "#{collection_name}/edit", :"#{object_name}" => object
+    end
+
+    define_handler "find_#{object_name}" do |id|
+      klass[id]
+    end
+
+    define_handler "find_#{collection_name}" do
+      klass.all
+    end
+
+    define_handler "initialize_#{object_name}" do |object_param|
+      klass.new object_param
+    end
+
+    define_handler "list_#{collection_name}" do
+      send :"before_list_#{object_name}"
+      render "#{collection_name}/list", :"#{collection_name}" => send(:"find_#{collection_name}")
+    end
+
     define_handler "new_#{object_name}" do
+      send :"before_new_#{object_name}"
       render "#{collection_name}/new", :"#{object_name}" => klass.new
     end
 
     define_handler "show_#{object_name}" do |object|
+      send :"before_show_#{object_name}", object
       render "#{collection_name}/show", :"#{object_name}" => object
     end
 
     define_handler "update_#{object_name}" do |object, object_param|
+      send :"before_update_#{object_name}", object
       object.set_all object_param
       if object.valid?
         object.save
@@ -84,15 +108,6 @@ module Crest
       else
         render "#{collection_name}/edit", :"#{object_name}" => object
       end
-    end
-
-    define_handler "delete_#{object_name}" do |object|
-      object.delete
-      res.redirect "#{base_uri}/#{collection_name}"
-    end
-
-    define_handler "edit_#{object_name}" do |object|
-      render "#{collection_name}/edit", :"#{object_name}" => object
     end
 
     block.call unless block.nil?
