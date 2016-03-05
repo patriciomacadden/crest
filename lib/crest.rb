@@ -45,7 +45,7 @@ module Crest
     define_handler("before_create_#{object_name}") { true }
     define_handler("before_delete_#{object_name}") { |object| true }
     define_handler("before_edit_#{object_name}") { |object| true }
-    define_handler("before_list_#{object_name}") { true }
+    define_handler("before_list_#{collection_name}") { true }
     define_handler("before_new_#{object_name}") { true }
     define_handler("before_show_#{object_name}") { |object| true }
     define_handler("before_update_#{object_name}") { |object| true }
@@ -85,7 +85,7 @@ module Crest
     end
 
     define_handler "list_#{collection_name}" do
-      send :"before_list_#{object_name}"
+      send :"before_list_#{collection_name}"
       render "#{collection_name}/list", :"#{collection_name}" => send(:"find_#{collection_name}")
     end
 
